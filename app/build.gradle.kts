@@ -44,8 +44,8 @@ android {
         schemaDirectory("$projectDir/schemas")
     }
 }
-
 dependencies {
+    implementation(libs.core.ktx)
     val room_version = "2.7.2"
 
     implementation("androidx.room:room-runtime:$room_version")
@@ -54,10 +54,25 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.56.2")
     ksp("com.google.dagger:hilt-android-compiler:2.56.2")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0") // ViewModel con corutinas
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.0")  // LiveData con corrutinas
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")   // Para usar lifecycleScope, etc.
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
+    // 📦 TESTING
 
+    // JUnit 4
+    testImplementation("junit:junit:4.13.2")
+
+    // Room in-memory testing
+    testImplementation("androidx.room:room-testing:2.7.2")
+
+    // Coroutines testing
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+
+    // AndroidX ApplicationProvider para Room
+    testImplementation("androidx.test:core:1.5.0")
+
+    // MockK (si querés mockear algo)
+    testImplementation("io.mockk:mockk:1.13.7")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -73,4 +88,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    testImplementation(kotlin("test"))
 }

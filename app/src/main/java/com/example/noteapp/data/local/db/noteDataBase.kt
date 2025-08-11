@@ -8,7 +8,7 @@ import com.example.noteapp.data.local.dao.NoteDao
 abstract class noteDataBase : RoomDatabase(){
     abstract fun noteDao(): NoteDao
 
-    companion object{
+    companion object{//cannot be instanced. 1 for all instance of the class
         @Volatile private var INSTANCE: noteDataBase? = null//visible for all threads
 
         fun getNoteDataBase(context: Context): noteDataBase {

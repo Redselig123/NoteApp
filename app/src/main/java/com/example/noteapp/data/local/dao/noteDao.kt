@@ -20,6 +20,6 @@ interface NoteDao{
     @Query("SELECT * FROM Notes")
     fun getAllNotes(): Flow<List<Note>>//flow is native for corrutines, it use flow in corrutine by default
 
-    @Query("SELECT 1 FROM Notes Where id = :name")
+    @Query("SELECT * FROM Notes Where id = :name")
     suspend fun getNoteByName(name: String):Note?
 }

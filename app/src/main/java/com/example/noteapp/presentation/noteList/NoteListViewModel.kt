@@ -14,11 +14,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class NoteListViewModel @Inject constructor(
     private val getAllNotes: GetAllNotes,
     private val insert: InsertNote,
     private val delete: DeleteNote,
-    private val search: GetNoteByName) : ViewModel(){
+    private val search: GetNoteByName
+) : ViewModel() {
 
     private val _notes = MutableStateFlow<List<Note>>(emptyList())
     val notes: StateFlow<List<Note>> = _notes
@@ -27,36 +29,60 @@ class NoteListViewModel @Inject constructor(
     val searchedNote: StateFlow<Note?> = _searchedNote
 
     init {
+        // simular notas
         viewModelScope.launch {
-            getAllNotes.get().collect { list ->
-                _notes.value = list
-            }
+            _notes.value = listOf(
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+                Note(id = 1, "ejq1", name = "Nota de prueba"),
+                Note(id = 2, "eje2", name = "Otra nota"),
+
+            )
         }
-
     }
 
-    public fun insertNote(content: String, name: String){
+    public fun insertNote(content: String, name: String) {
         val nota = Note(id = null, content, name)
-        viewModelScope.launch{
-              insert.get(nota)
-          }//TODO validate
+        viewModelScope.launch {
+            insert.get(nota)
+        }//TODO validate
 
     }
 
-    public fun deleteNote(note : Note){
+    public fun deleteNote(note: Note) {
         viewModelScope.launch {
             val success = delete.delete(note)
-            if(success == true){
+            if (success == true) {
                 //TODO MSJ
             }
         }
     }
-    public fun getNoteByName(name: String){
+
+    public fun getNoteByName(name: String) {
         viewModelScope.launch {
             val noteFind = search.get(name)
             _searchedNote.value = noteFind
         }
 
     }
-
 }

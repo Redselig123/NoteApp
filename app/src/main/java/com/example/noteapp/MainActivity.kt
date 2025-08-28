@@ -11,8 +11,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.noteapp.data.local.entities.Note
+import com.example.noteapp.ui.NoteUi.NoteList
 import com.example.noteapp.ui.theme.NoteAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,9 +25,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             NoteAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                    NoteList(
+                        modifier = Modifier.padding(innerPadding),
+                        noteListViewModel = hiltViewModel()
                     )
                 }
             }
@@ -30,18 +35,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     NoteAppTheme {
-        Greeting("Android")
+        NoteList(
+            noteListViewModel =  hiltViewModel(),
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }

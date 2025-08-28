@@ -1,10 +1,17 @@
 package com.example.noteapp.data.local.db
 
 import android.content.Context
+import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.noteapp.data.local.dao.NoteDao
+import com.example.noteapp.data.local.entities.Note
 
+@Database(
+    entities = [Note::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class noteDataBase : RoomDatabase(){
     abstract fun noteDao(): NoteDao
 

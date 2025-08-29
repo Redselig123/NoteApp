@@ -31,33 +31,7 @@ class NoteListViewModel @Inject constructor(
     init {
         // simular notas
         viewModelScope.launch {
-            _notes.value = listOf(
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
-                Note(id = 1, "ejq1", name = "Nota de prueba"),
-                Note(id = 2, "eje2", name = "Otra nota"),
 
-            )
         }
     }
 

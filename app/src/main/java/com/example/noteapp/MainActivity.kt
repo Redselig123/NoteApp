@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.noteapp.data.local.entities.Note
+import com.example.noteapp.ui.NoteUi.NoteApp
 import com.example.noteapp.ui.NoteUi.NoteList
 import com.example.noteapp.ui.theme.NoteAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,25 +25,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NoteAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NoteList(
-                        modifier = Modifier.padding(innerPadding),
-                        noteListViewModel = hiltViewModel()
-                    )
-                }
+                NoteApp()
             }
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NoteAppTheme {
-        NoteList(
-            noteListViewModel =  hiltViewModel(),
-            modifier = Modifier.fillMaxSize()
-        )
     }
 }

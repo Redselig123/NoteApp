@@ -3,5 +3,30 @@
     <string name="note_list">Note List</string>
     <string name="note_info">Note Info</string>
     <string name="new_note">New Note</string>
+
+    <string name="button_placeholder">Escribe aqui...</string>
+    <string name="floatting_action_button_content">Guardar nota</string>
+
     <string name="note_button">Crear nueva nota</string>
+
+    <string name="dialog_save">Guardar</string>
+    <string name="dialog_dismis">Descartar</string>
+    <string name="dialog_cancel">Cancelar</string>
+    <string name="dialog_delete">Eliminar</string>
+
+    <string name="save_note_dialog_placeholder">Título de la nota</string>
+    <string name="save_note_dialog_sub_title">Escribe un nombre para la nota:</string>
+
+    <string name="not_save_note_dialog_subtitle">¿Deseas guardar los cambios antes de salir?</string>
+    <string name="not_save_note_dialog_title">Cambios no guardados</string>
+
+    <string name="note_info_button_description">Guardar cambios</string>
+
+    <string name="note_Item_list_button_description">Eliminar nota</string>
+
+    <string name="dialog_delete_title">Eliminar nota</string>
+    <string name="dialog_delete_sub_title">¿Estás seguro que deseas eliminar esta nota?</string>
+
+
+
 </resources>

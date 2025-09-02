@@ -12,7 +12,7 @@ import com.example.noteapp.data.local.entities.Note
     version = 1,
     exportSchema = false
 )
-abstract class noteDataBase : RoomDatabase(){
+abstract class noteDataBase : RoomDatabase(){//TODO() change pk to name and upsert by name
     abstract fun noteDao(): NoteDao
 
     companion object{//cannot be instanced. 1 for all instance of the class

@@ -1,5 +1,6 @@
 package com.example.noteapp.presentation.noteList
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.noteapp.data.local.entities.Note
@@ -29,17 +30,19 @@ class NoteListViewModel @Inject constructor(
     val searchedNote: StateFlow<Note?> = _searchedNote
 
     init {
-        // simular notas
         viewModelScope.launch {
-
+            getAllNotes.get().collect { noteList ->
+                _notes.value = noteList
+            }
         }
     }
 
-    public fun insertNote(content: String, name: String) {
-        val nota = Note(id = null, content, name)
+    public fun insertNote(content: String, name: String, id:Int?) {
+        val note = Note(id = id, content, name)
         viewModelScope.launch {
-            insert.get(nota)
-        }//TODO validate
+            insert.get(note)
+            Log.d("Notes", "Nota insertada con ID: ${note.id}")
+        }
 
     }
 

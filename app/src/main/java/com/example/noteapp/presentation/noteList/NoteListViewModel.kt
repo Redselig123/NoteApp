@@ -37,20 +37,10 @@ class NoteListViewModel @Inject constructor(
         }
     }
 
-    public fun insertNote(content: String, name: String, id:Int?) {
+    public fun insertNote(content: String, name: String, id: Int?) {
         val note = Note(id = id, content, name)
         viewModelScope.launch {
-            val existingNote = search.get(name)
-            if(existingNote != null){
-                val updateNote = existingNote.copy(content = content)
-                insert.get(note)
-            }
-            else{
-                val newNote = Note(id = id, content = content, name = name)
-                insert.get(note)
-                Log.d("Notes", "Nota insertada con ID: ${note.id}")
-            }
-
+            insert.get(note)
         }
 
     }
@@ -63,12 +53,15 @@ class NoteListViewModel @Inject constructor(
             }
         }
     }
+    suspend fun doesNoteExist(title: String): Boolean {
+        val note = search.get(title)
+        return note != null
+    }
 
     public fun getNoteByName(name: String) {
         viewModelScope.launch {
             val noteFind = search.get(name)
             _searchedNote.value = noteFind
         }
-
     }
 }

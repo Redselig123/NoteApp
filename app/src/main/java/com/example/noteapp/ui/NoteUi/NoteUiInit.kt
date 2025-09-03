@@ -53,6 +53,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -62,6 +63,8 @@ import androidx.navigation.navArgument
 import com.example.noteapp.R
 import com.example.noteapp.data.local.entities.Note
 import com.example.noteapp.presentation.noteList.NoteListViewModel
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 
 enum class NoteScreen(@StringRes val title: Int) {
     Start(title = R.string.note_list),
@@ -132,6 +135,8 @@ fun NewNote(
 
     var showDialog by remember { mutableStateOf(false) }
     var showUnsavedDialog by remember { mutableStateOf(false) }
+    var pendingTitle by remember { mutableStateOf("") }
+    var showOverwriteDialog by remember { mutableStateOf(false) }
 
     val hasChanges = text != ""
 
@@ -184,16 +189,47 @@ fun NewNote(
             SaveNoteDialog(
                 onDismiss = { showDialog = false },
                 onSave = { title ->
-                    viewModel.insertNote(
-                        content = text,
-                        name = title,
-                        id = null
-                    )
-                    showDialog = false
-                    back()
+                    viewModel.viewModelScope.launch {
+                        val exists = viewModel.doesNoteExist(title)
+                        if (exists) {
+                            pendingTitle = title
+                            showDialog = false
+                            showOverwriteDialog = true
+                        } else {
+                            viewModel.insertNote(content = text, name = title, id = null)
+                            showDialog = false
+                            back()
+                        }
+                    }
                 }
             )
         }
+        if (showOverwriteDialog) {
+            AlertDialog(
+                onDismissRequest = { showOverwriteDialog = false },
+                title = { Text("La nota ya existe") },
+                text = { Text("¿Querés sobrescribir la nota '$pendingTitle'?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.insertNote(
+                            content = text,
+                            name = pendingTitle,
+                            id = null
+                        )
+                        showOverwriteDialog = false
+                        back()
+                    }) {
+                        Text("Sobrescribir")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showOverwriteDialog = false }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
+
         if (showUnsavedDialog) {
             AlertDialog(
                 onDismissRequest = { showUnsavedDialog = false },
@@ -279,7 +315,7 @@ fun NoteInfo(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if(content != note.content){
+                    if (content != note.content) {
                         val updatedNote = note.copy(content = content)
                         onSave(updatedNote)
                     }
@@ -332,7 +368,11 @@ fun NoteInfo(
                 text = { Text(stringResource(R.string.not_save_note_dialog_subtitle)) },
                 confirmButton = {
                     TextButton(onClick = {
-                        val noteToSave = note?.copy(content = content) ?: Note(id = null, content = content, name = "Nueva nota")
+                        val noteToSave = note?.copy(content = content) ?: Note(
+                            id = null,
+                            content = content,
+                            name = "Nueva nota"
+                        )
                         onSave(noteToSave)
                         showUnsavedDialog = false
                         onNoteSaved()

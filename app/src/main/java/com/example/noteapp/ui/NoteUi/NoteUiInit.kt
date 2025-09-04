@@ -45,6 +45,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -141,7 +142,7 @@ fun NewNote(
     viewModel: NoteListViewModel = hiltViewModel(),
     back: () -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
+    var text by rememberSaveable { mutableStateOf("") }
 
     var showDialog by remember { mutableStateOf(false) }
     var showUnsavedDialog by remember { mutableStateOf(false) }
@@ -150,7 +151,6 @@ fun NewNote(
 
     val hasChanges = text != ""
 
-    // Interceptamos el back press físico
     BackHandler(enabled = hasChanges) {
         showUnsavedDialog = true
     }
@@ -346,7 +346,7 @@ fun NoteInfo(
     onSave: (Note) -> Unit,
     onNoteSaved: () -> Unit
 ) {
-    var content by remember { mutableStateOf(note.content) }
+    var content by rememberSaveable { mutableStateOf(note.content) }
     var showUnsavedDialog by remember { mutableStateOf(false) }
 
     val hasChanges = content != (note?.content ?: "")

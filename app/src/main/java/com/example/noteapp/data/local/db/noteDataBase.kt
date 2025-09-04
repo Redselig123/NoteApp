@@ -22,6 +22,29 @@ abstract class noteDataBase : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: noteDataBase? = null
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """
+            CREATE TABLE IF NOT EXISTS `Notes_new` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `content` TEXT NOT NULL,
+                `name` TEXT NOT NULL
+            )
+        """
+                )
+                database.execSQL(
+                    """
+            INSERT INTO Notes_new (id, content, name)
+            SELECT id, content, name FROM Notes
+        """
+                )
+                // must not have been duplicated already, otherwise will fail
+                database.execSQL("DROP TABLE Notes")
+                database.execSQL("ALTER TABLE Notes_new RENAME TO Notes")
+                database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_Notes_name` ON `Notes` (`name`)")
+            }
+        }
 
 
         fun getNoteDataBase(context: Context): noteDataBase {
@@ -30,8 +53,7 @@ abstract class noteDataBase : RoomDatabase() {
                     context.applicationContext,
                     noteDataBase::class.java,
                     "note_database"
-                )
-                    .fallbackToDestructiveMigration()
+                ).addMigrations(MIGRATION_1_2)
                     .build()
 
                 INSTANCE = instance

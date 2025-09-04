@@ -1,5 +1,9 @@
 package com.example.noteapp.ui.NoteUi
 
+import androidx.compose.material3.OutlinedTextField
+
+import androidx.compose.runtime.*
+
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
@@ -33,6 +37,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -63,7 +68,6 @@ import androidx.navigation.navArgument
 import com.example.noteapp.R
 import com.example.noteapp.data.local.entities.Note
 import com.example.noteapp.presentation.noteList.NoteListViewModel
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 enum class NoteScreen(@StringRes val title: Int) {
@@ -115,12 +119,18 @@ fun SaveNoteDialog(
                     }
                 }
             ) {
-                Text(stringResource(R.string.dialog_save))
+                Text(
+                    stringResource(R.string.dialog_save),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         },
         dismissButton = {
             TextButton(onClick = { onDismiss() }) {
-                Text(stringResource(R.string.dialog_cancel))
+                Text(
+                    stringResource(R.string.dialog_cancel),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     )
@@ -152,7 +162,9 @@ fun NewNote(
                         showDialog = true
                     }
                 },
-                modifier = Modifier.imePadding()//to not be under keyboard
+                modifier = Modifier.imePadding(),//to not be under keyboard
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
@@ -165,7 +177,7 @@ fun NewNote(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .imePadding(),//to not be under keyboard
             contentAlignment = Alignment.Center
         ) {
@@ -175,13 +187,26 @@ fun NewNote(
                     text = newText
                 },
                 modifier = Modifier.fillMaxSize(),
-                placeholder = { Text(stringResource(R.string.button_placeholder)) },
+                placeholder = {
+                    Text(
+                        stringResource(R.string.button_placeholder),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+                },
                 textStyle = TextStyle(fontSize = 18.sp),
                 singleLine = false,
                 maxLines = Int.MAX_VALUE,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Send
+                ), colors = TextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    disabledIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                    cursorColor =  MaterialTheme.colorScheme.onSurface,
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background
                 )
             )
         }
@@ -207,8 +232,10 @@ fun NewNote(
         if (showOverwriteDialog) {
             AlertDialog(
                 onDismissRequest = { showOverwriteDialog = false },
-                title = { Text("La nota ya existe") },
-                text = { Text("¿Querés sobrescribir la nota '$pendingTitle'?") },
+                title = { Text(stringResource(R.string.showOverwriteDialog_title)) },
+                text = {
+                    Text(stringResource(R.string.showOverwriteDialog_sub_title, pendingTitle))
+                },
                 confirmButton = {
                     TextButton(onClick = {
                         viewModel.insertNote(
@@ -219,12 +246,18 @@ fun NewNote(
                         showOverwriteDialog = false
                         back()
                     }) {
-                        Text("Sobrescribir")
+                        Text(
+                            stringResource(R.string.showOverwriteDialog_confirm_button),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showOverwriteDialog = false }) {
-                        Text("Cancelar")
+                        Text(
+                            stringResource(R.string.showOverwriteDialog_cancel_button),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 }
             )
@@ -240,7 +273,10 @@ fun NewNote(
                         showDialog = true
                         showUnsavedDialog = false
                     }) {
-                        Text(stringResource(R.string.dialog_save))
+                        Text(
+                            stringResource(R.string.dialog_save),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 },
                 dismissButton = {
@@ -249,10 +285,16 @@ fun NewNote(
                             showUnsavedDialog = false
                             back()
                         }) {
-                            Text(stringResource(R.string.dialog_dismis))
+                            Text(
+                                stringResource(R.string.dialog_dismis),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                         TextButton(onClick = { showUnsavedDialog = false }) {
-                            Text(stringResource(R.string.dialog_cancel))
+                            Text(
+                                stringResource(R.string.dialog_cancel),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                 }
@@ -271,10 +313,12 @@ fun NoteList(
     val notes by noteListViewModel.notes.collectAsState()
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onButtonClick) {
+            FloatingActionButton(onClick = onButtonClick,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White ) {
                 Icon(
                     painter = painterResource(R.drawable.pen_icon),
-                    contentDescription = stringResource(R.string.note_button)
+                    contentDescription = stringResource(R.string.note_button),
                 )
             }
         }

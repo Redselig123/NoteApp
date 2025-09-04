@@ -27,6 +27,11 @@
     <string name="dialog_delete_title">Eliminar nota</string>
     <string name="dialog_delete_sub_title">¿Estás seguro que deseas eliminar esta nota?</string>
 
+    <string name="showOverwriteDialog_title">La nota ya existe</string>
+    <string name="showOverwriteDialog_sub_title">¿Querés sobrescribir la nota \'%1$s\'?</string>
+
+    <string name="showOverwriteDialog_confirm_button">Sobrescribir</string>
+    <string name="showOverwriteDialog_cancel_button">Cancelar</string>
 
 
 </resources>

@@ -91,7 +91,6 @@ fun NoteInfo(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Editable: solo el contenido
             OutlinedTextField(
                 value = content,
                 onValueChange = { content = it },

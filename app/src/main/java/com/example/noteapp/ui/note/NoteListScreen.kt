@@ -1,6 +1,8 @@
 package com.example.noteapp.ui.note
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,9 +32,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.noteapp.R
 import com.example.noteapp.data.local.entities.Note
 import com.example.noteapp.presentation.noteList.NoteListViewModel
+import com.example.noteapp.ui.note.components.SaveNoteDialog
+import com.example.noteapp.ui.note.components.SaveOrOverwriteDialog
+import kotlinx.coroutines.launch
 
 @Composable
 fun NoteList(
@@ -44,9 +51,11 @@ fun NoteList(
     val notes by noteListViewModel.notes.collectAsState()
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onButtonClick,
+            FloatingActionButton(
+                onClick = onButtonClick,
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White ) {
+                contentColor = Color.White
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.pen_icon),
                     contentDescription = stringResource(R.string.note_button),
@@ -64,22 +73,34 @@ fun NoteList(
                     onCardClick = { onNoteClick(note) },
                     onDelete = { noteToDelete ->
                         noteListViewModel.deleteNote(noteToDelete)
-                    }
+                    },
                 )
             }
         }
     }
 }
-@Composable
-fun NoteItemList(note: Note, onCardClick: (note: Note) -> Unit, onDelete: (Note) -> Unit) {
-    var showDeleteDialog by remember { mutableStateOf(false) }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun NoteItemList(
+    note: Note,
+    onCardClick: (note: Note) -> Unit,
+    onDelete: (Note) -> Unit,
+    viewModel: NoteListViewModel = hiltViewModel()
+) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showChangeNameDialog by remember { mutableStateOf(false) }
+    var showOverwriteDialog by remember { mutableStateOf(false) }
+    var pendingName by remember { mutableStateOf("") }
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                onCardClick(note)
-            }) {
+            .combinedClickable(
+                onClick = { onCardClick(note) },
+                onLongClick = { showChangeNameDialog = true }
+            )
+
+    ) {
         Row(modifier = Modifier.padding(16.dp)) {
             Text(text = note.name, fontSize = 18.sp, modifier = Modifier.weight(1f))
             IconButton(onClick = { showDeleteDialog = true }) {
@@ -91,6 +112,32 @@ fun NoteItemList(note: Note, onCardClick: (note: Note) -> Unit, onDelete: (Note)
             }
         }
     }
+
+    SaveOrOverwriteDialog(
+        showSaveDialog = showChangeNameDialog,
+        showOverwriteDialog = showOverwriteDialog,
+        pendingTitle = pendingName,
+        onDismissSave = { showChangeNameDialog = false },
+        onDismissOverwrite = { showOverwriteDialog = false },
+        onSaveRequested = { newName ->
+            viewModel.viewModelScope.launch {
+                val exists = viewModel.doesNoteExist(newName)
+                if (exists) {
+                    pendingName = newName
+                    showChangeNameDialog = false
+                    showOverwriteDialog = true
+                } else {
+                    viewModel.renameNote(note, newName)
+                    showChangeNameDialog = false
+                }
+            }
+        },
+        onOverwriteConfirmed = {
+            viewModel.renameNote(note, pendingName)
+            showOverwriteDialog = false
+        }
+    )
+
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },

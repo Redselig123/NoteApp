@@ -38,6 +38,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.noteapp.R
 import com.example.noteapp.presentation.noteList.NoteListViewModel
 import com.example.noteapp.ui.note.components.SaveNoteDialog
+import com.example.noteapp.ui.note.components.SaveOrOverwriteDialog
 import kotlinx.coroutines.launch
 
 @Composable
@@ -47,7 +48,7 @@ fun NewNote(
 ) {
     var text by rememberSaveable { mutableStateOf("") }
 
-    var showDialog by remember { mutableStateOf(false) }
+    var showSaveDialog by remember { mutableStateOf(false) }
     var showUnsavedDialog by remember { mutableStateOf(false) }
     var pendingTitle by remember { mutableStateOf("") }
     var showOverwriteDialog by remember { mutableStateOf(false) }
@@ -62,7 +63,7 @@ fun NewNote(
             FloatingActionButton(
                 onClick = {
                     if (text.isNotBlank()) {
-                        showDialog = true
+                        showSaveDialog = true
                     }
                 },
                 modifier = Modifier.imePadding(),//to not be under keyboard
@@ -113,58 +114,32 @@ fun NewNote(
                 )
             )
         }
-        if (showDialog) {
-            SaveNoteDialog(
-                onDismiss = { showDialog = false },
-                onSave = { title ->
-                    viewModel.viewModelScope.launch {
-                        val exists = viewModel.doesNoteExist(title)
-                        if (exists) {
-                            pendingTitle = title
-                            showDialog = false
-                            showOverwriteDialog = true
-                        } else {
-                            viewModel.insertNote(content = text, name = title, id = null)
-                            showDialog = false
-                            back()
-                        }
-                    }
-                }
-            )
-        }
-        if (showOverwriteDialog) {
-            AlertDialog(
-                onDismissRequest = { showOverwriteDialog = false },
-                title = { Text(stringResource(R.string.showOverwriteDialog_title)) },
-                text = {
-                    Text(stringResource(R.string.showOverwriteDialog_sub_title, pendingTitle))
-                },
-                confirmButton = {
-                    TextButton(onClick = {
-                        viewModel.insertNote(
-                            content = text,
-                            name = pendingTitle,
-                            id = null
-                        )
-                        showOverwriteDialog = false
+        SaveOrOverwriteDialog(
+            showSaveDialog = showSaveDialog,
+            showOverwriteDialog = showOverwriteDialog,
+            pendingTitle = pendingTitle,
+            onDismissSave = { showSaveDialog = false },
+            onDismissOverwrite = { showOverwriteDialog = false },
+            onSaveRequested = { title ->
+                viewModel.viewModelScope.launch {
+                    val exists = viewModel.doesNoteExist(title)
+                    if (exists) {
+                        pendingTitle = title
+                        showSaveDialog = false
+                        showOverwriteDialog = true
+                    } else {
+                        viewModel.insertNote(content = text, name = title, id = null)
+                        showSaveDialog = false
                         back()
-                    }) {
-                        Text(
-                            stringResource(R.string.showOverwriteDialog_confirm_button),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showOverwriteDialog = false }) {
-                        Text(
-                            stringResource(R.string.showOverwriteDialog_cancel_button),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
                     }
                 }
-            )
-        }
+            },
+            onOverwriteConfirmed = {
+                viewModel.insertNote(content = text, name = pendingTitle, id = null)
+                showOverwriteDialog = false
+                back()
+            }
+        )
 
         if (showUnsavedDialog) {
             AlertDialog(
@@ -173,7 +148,7 @@ fun NewNote(
                 text = { Text(stringResource(R.string.not_save_note_dialog_subtitle)) },
                 confirmButton = {
                     TextButton(onClick = {
-                        showDialog = true
+                        showSaveDialog = true
                         showUnsavedDialog = false
                     }) {
                         Text(

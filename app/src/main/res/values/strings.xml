@@ -33,5 +33,8 @@
     <string name="showOverwriteDialog_confirm_button">Sobrescribir</string>
     <string name="showOverwriteDialog_cancel_button">Cancelar</string>
 
+    <string name="showChangeNameDialogTitle">Nuevo Titutlo</string>
+    <string name="showChangeNameDialog_sub_title">Ingrese nuevo titulo</string>
+
 
 </resources>

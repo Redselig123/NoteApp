@@ -37,6 +37,13 @@ class NoteListViewModel @Inject constructor(
         }
     }
 
+    public fun renameNote(note: Note, newName: String) {
+        val updateNote = note.copy(name = newName)
+        viewModelScope.launch {
+            insert.get(updateNote)
+        }
+    }
+
     public fun insertNote(content: String, name: String, id: Int?) {
         val note = Note(id = id, content, name)
         viewModelScope.launch {
@@ -53,6 +60,7 @@ class NoteListViewModel @Inject constructor(
             }
         }
     }
+
     suspend fun doesNoteExist(title: String): Boolean {
         val note = search.get(title)
         return note != null

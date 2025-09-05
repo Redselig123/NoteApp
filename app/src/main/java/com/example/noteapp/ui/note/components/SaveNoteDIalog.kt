@@ -22,9 +22,10 @@ import com.example.noteapp.R
 @Composable
 fun SaveNoteDialog(
     onDismiss: () -> Unit,
-    onSave: (String) -> Unit
+    onSave: (String) -> Unit,
+    initialTitle: String = ""
 ) {
-    var noteTitle by remember { mutableStateOf("") }
+    var noteTitle by remember { mutableStateOf(initialTitle) }
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
